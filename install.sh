@@ -10,8 +10,8 @@ sudo apt-get upgrade -y
 sudo apt-get install -y python3 python3-pip
 
 # Update pip
-pip3 install --upgrade pip
+sudo pip3 install --upgrade pip
 
 # Install required Python libraries
-pip3 install torch transformers torchvision
-
+sudo pip3 install torch transformers torchvision pandas
+sudo pip3 install transformers[torch]

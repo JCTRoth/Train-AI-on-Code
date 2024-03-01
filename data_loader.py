@@ -4,6 +4,7 @@ from objects import FileData
 import pandas as pd
 import logger
 from logger import get_logger
+import language_filter_lists
 
 def convert_files_to_csv(input_dir, output_csv, removeToGetRelativePath):
         
@@ -38,10 +39,10 @@ def convert_files_to_csv(input_dir, output_csv, removeToGetRelativePath):
 
 
 
-def load_dataset_as_list(input_dir, removeToGetRelativePath):
+def load_dataset_as_list(input_dir, removeToGetRelativePath, listOfFilePostFixes):
     # Gets all files in sub folder every where
     # Collects the files in a list
-    data_files = list_files(input_dir, removeToGetRelativePath)
+    data_files = list_files(input_dir, removeToGetRelativePath, listOfFilePostFixes)
     data_files = load_content(data_files)
 
     number_of_rows = len(data_files)
@@ -64,7 +65,7 @@ def load_content(list_of_files):
     return list_of_files
 
 
-def list_files(folder_path, removeToGetRelativePath):
+def list_files(folder_path, removeToGetRelativePath, listOfFilePostFixes):
     """
     List all files contains in the folder and sub-folders.
     :param folder_path:
@@ -78,7 +79,7 @@ def list_files(folder_path, removeToGetRelativePath):
     for current_dir, subdirs, files in os.walk(folder_path):
         for file in files:
             if not file.startswith('.'):
-                if file.endswith('.java'):
+                if any(file.endswith(postfix) for postfix in listOfFilePostFixes):
 
                     relative_path = os.path.join(current_dir, file)
                     absolute_path = os.path.abspath(relative_path)
@@ -105,7 +106,7 @@ def load_csv_file(csv_file):
 
 if __name__ == "__main__":
     # Input directory containing your files
-    input_dir = "/home/jonas/Git/logiq-dao/"
+    input_dir = "/home/jonas/Git/ShoppingListApp/"
 
     # Output CSV file path
     output_csv = "/home/jonas/Schreibtisch/file.csv"
@@ -114,7 +115,8 @@ if __name__ == "__main__":
 
     logger.config_logger()
 
-    file_list : list[FileData] = load_dataset_as_list(input_dir=input_dir,removeToGetRelativePath=removeToGetRelativePath)
+    file_list : list[FileData] = load_dataset_as_list(input_dir=input_dir,removeToGetRelativePath=removeToGetRelativePath,
+                                                      listOfFilePostFixes=language_filter_lists.csharp_postfixes)
 
     # Convert files to CSV
     # convert_files_to_csv(input_dir, output_csv, removeToGetRelativePath)

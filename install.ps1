@@ -18,5 +18,6 @@ python3 -m pip install --upgrade pip
 
 # Install required Python libraries
 Write-Host "Installing required Python libraries..."
-python3 -m pip install torch transformers torchvision
+python3 -m pip install torch transformers torchvision pandas
+python3 -m pip install transformers[torch]
 

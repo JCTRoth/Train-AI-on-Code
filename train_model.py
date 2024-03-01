@@ -2,6 +2,7 @@ from transformers import TrainingArguments, Trainer, AutoModelForSequenceClassif
 from torch.utils.data import DataLoader
 from objects import ClassDataset
 import logger
+import language_filter_lists
 import data_loader as data_loader
 
 def train(list_of_files):
@@ -39,16 +40,18 @@ def train(list_of_files):
 
 if __name__ == "__main__":
     # Input directory containing your files
-    input_dir = "/home/developer/Git/logiq-dao/"
+    input_dir = "/home/jonas/Git/ShoppingListApp/"
 
     # Output CSV file path
-    output_csv = "/home/developer/Schreibtisch/file.csv"
+    # output_csv = "/home/jonas/Schreibtisch/file.csv"
 
-    removeToGetRelativePath = "/home/developer/Git"
+    removeToGetRelativePath = "/home/jonas/Git"
 
     logger.config_logger()
 
-    list_of_files = data_loader.load_dataset_as_list(input_dir=input_dir, removeToGetRelativePath=removeToGetRelativePath)
+    list_of_files = data_loader.load_dataset_as_list(input_dir=input_dir,
+    removeToGetRelativePath=removeToGetRelativePath,
+    listOfFilePostFixes=language_filter_lists.csharp_postfixes)
 
     train(list_of_files)
 

@@ -1,3 +1,8 @@
+from transformers import AutoTokenizer
+from torch.utils.data import Dataset
+import torch
+
+
 class FileData:
     def __init__(self):
         return
@@ -46,10 +51,6 @@ class FileData:
                f"Absolute Path: {self.absolute_path}\n" \
                f"Content: {self.content}"
 
-
-from transformers import AutoTokenizer
-from torch.utils.data import Dataset
-import torch
 
 class ClassDataset(Dataset):
     inputDataList = []
