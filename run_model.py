@@ -1,15 +1,21 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
+import training_args
+from logger import get_logger
+
 
 # Load the model and tokenizer
-model = AutoModelForCausalLM.from_pretrained(training_args.output_dir)
-tokenizer = AutoTokenizer.from_pretrained(training_args.output_dir)
+# model = AutoModelForCausalLM.from_pretrained(training_args.B1_E99.output_dir, is_decoder=True)
+# tokenizer = AutoTokenizer.from_pretrained(training_args.B1_E99.output_dir,is_decoder=True)
+model = AutoModelForCausalLM.from_pretrained("bert-base-uncased",is_decoder=True)
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased",is_decoder=True)
+
 
 # Set the model to evaluation mode
 model.eval()
 
 # Function to generate a response
-def generate_response(input_text, model, tokenizer, max_length=50, temperature=0.7, top_k=50, top_p=0.95):
+def generate_response(input_text, model, tokenizer, max_length=50, temperature=0.7, top_k=90, top_p=1.95):
     with torch.no_grad():
         input_ids = torch.tensor([tokenizer.encode(input_text, add_special_tokens=True)])
         output_ids = model.generate(
@@ -25,8 +31,9 @@ def generate_response(input_text, model, tokenizer, max_length=50, temperature=0
 
 # Start a chat loop
 while True:
+    get_logger().info("Chat with the model. Type 'exit' to end the conversation.")
     user_input = input("You: ")
     if user_input.lower() == "exit":
         break
     bot_response = generate_response(user_input, model, tokenizer)
-    print(f"Bot: {bot_response}")
+    get_logger().info(f"Bot: {bot_response}")

@@ -1,46 +1,64 @@
-from transformers import TrainingArguments, Trainer, AutoModelForSequenceClassification
+from transformers import AutoModelForCausalLM
 from torch.utils.data import DataLoader
 from objects import ClassDataset
 import logger
 import language_filter_lists
 import data_loader as data_loader
+import psutil
+import os
+from logger import get_logger
+import training_args
+
 
 def train(list_of_files):
     # Load the pre-trained model
-    model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=2)  # Adjust num_labels as needed
+    # model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1")
+    model = AutoModelForCausalLM.from_pretrained("bert-base-uncased")
+
     classDataset = ClassDataset(inputDataList=list_of_files)
 
-    # Define your training arguments
-    training_args = TrainingArguments(
-        per_device_train_batch_size=1,
-        num_train_epochs=999,
-        logging_dir='./log',
-        output_dir='./training_output'
-    )
-
-
     # Create a DataLoader for the dataset
-    dataloader = DataLoader(classDataset, batch_size=training_args.per_device_train_batch_size, shuffle=True)
+    dataloader = DataLoader(classDataset, batch_size=training_args.B1_E99.per_device_train_batch_size, shuffle=True)
 
     # Set your model to training mode
     model.train()
 
     # Iterate over epochs
-    for epoch in range(training_args.num_train_epochs):
+    for epoch in range(training_args.B1_E99.num_train_epochs):
+        get_logger().info(f"Epoch {epoch + 1}/{training_args.B1_E99.num_train_epochs}")
+        get_logger().info(f"RAM used: {psutil.Process().memory_info().rss / (1024 * 1024):.2f} MB")
+
         # Iterate over batches in your DataLoader
-        for batch in dataloader:
-            # Log training progress for the epoch
-            print(f"Epoch {epoch + 1}/{training_args.num_train_epochs}:")
+        for batch_index, batch in enumerate(dataloader):
+            print(f"\tBatch {batch_index + 1}/{len(dataloader)}")
+
+            # Access batch data if needed
+            # inputs, labels = batch
 
     # Save the trained model
-    model.save_pretrained(training_args.output_dir)
+    model.save_pretrained(training_args.B1_E99.output_dir)
 
+    # Save the tokenizer
+    classDataset.get_tokenizer().save_pretrained(training_args.B1_E99.output_dir)
+
+
+def limit_cpu_usage():
+    # Get the current process
+    process = psutil.Process(os.getpid())
+
+    # Get the number of CPU cores
+    cpu_count = psutil.cpu_count()
+
+    # Let one cpu core for the OS
+    process.cpu_affinity([cpu_count - 1])
+
+    print("Limit CPU number of cpus for pid: " + str(process.pid) + " to " + str(cpu_count - 1))
 
 
 
 if __name__ == "__main__":
     # Input directory containing your files
-    input_dir = "/home/jonas/Git/ShoppingListApp/"
+    input_dir = "/home/jonas/Git/ShoppingListServer/"
 
     # Output CSV file path
     # output_csv = "/home/jonas/Schreibtisch/file.csv"
@@ -49,10 +67,12 @@ if __name__ == "__main__":
 
     logger.config_logger()
 
+    # limit_cpu_usage()
+
     list_of_files = data_loader.load_dataset_as_list(input_dir=input_dir,
     removeToGetRelativePath=removeToGetRelativePath,
     listOfFilePostFixes=language_filter_lists.csharp_postfixes)
-
+    
     train(list_of_files)
 
     # Convert files to CSV

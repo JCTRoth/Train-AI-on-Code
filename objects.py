@@ -57,23 +57,27 @@ class ClassDataset(Dataset):
 
     def __init__(self, inputDataList):
         self.inputDataList = inputDataList
+        # self.tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
         self.tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
     def __len__(self):
         return len(self.inputDataList)
-    
+
     def __getitem__(self, idx):
         # Tokenize and encode text data
         encoding = self.tokenizer(str(self.inputDataList[idx]), return_tensors='pt', padding=True, truncation=True)
-        
+
         # Use Classname as Label
         # Tokenize the string and encode it
         tokenized_input = self.tokenizer(self.inputDataList[idx].file_name, padding="max_length", truncation=True, max_length=128)
         # Your label will be the encoded tokens
         label = tokenized_input["input_ids"]
-        
+
         return {
             'input_ids': encoding['input_ids'].flatten(),
             'attention_mask': encoding['attention_mask'].flatten(),
             'labels': label
         }
+
+    def get_tokenizer(self):
+        return self.tokenizer

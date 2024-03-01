@@ -2,7 +2,6 @@ import os
 import csv
 from objects import FileData
 import pandas as pd
-import logger
 from logger import get_logger
 import language_filter_lists
 
@@ -46,7 +45,7 @@ def load_dataset_as_list(input_dir, removeToGetRelativePath, listOfFilePostFixes
     data_files = load_content(data_files)
 
     number_of_rows = len(data_files)
-    get_logger().info(f"Loaded {number_of_rows} of lines from {input_dir}")
+    get_logger().info(f"Loaded {number_of_rows} files from {input_dir}")
 
     return data_files
 
@@ -112,8 +111,6 @@ if __name__ == "__main__":
     output_csv = "/home/jonas/Schreibtisch/file.csv"
 
     removeToGetRelativePath = "/home/jonas/Git"
-
-    logger.config_logger()
 
     file_list : list[FileData] = load_dataset_as_list(input_dir=input_dir,removeToGetRelativePath=removeToGetRelativePath,
                                                       listOfFilePostFixes=language_filter_lists.csharp_postfixes)
