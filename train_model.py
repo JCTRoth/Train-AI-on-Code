@@ -13,19 +13,19 @@ import training_args
 def train(list_of_files):
     # Load the pre-trained model
     # model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1")
-    model = AutoModelForCausalLM.from_pretrained("bert-base-uncased")
+    model = AutoModelForCausalLM.from_pretrained(training_args.model_name_string)
 
     classDataset = ClassDataset(inputDataList=list_of_files)
 
     # Create a DataLoader for the dataset
-    dataloader = DataLoader(classDataset, batch_size=training_args.B1_E99.per_device_train_batch_size, shuffle=True)
+    dataloader = DataLoader(classDataset, batch_size=training_args.config.per_device_train_batch_size, shuffle=True)
 
     # Set your model to training mode
     model.train()
 
     # Iterate over epochs
-    for epoch in range(training_args.B1_E99.num_train_epochs):
-        get_logger().info(f"Epoch {epoch + 1}/{training_args.B1_E99.num_train_epochs}")
+    for epoch in range(training_args.config.num_train_epochs):
+        get_logger().info(f"Epoch {epoch + 1}/{training_args.config.num_train_epochs}")
         get_logger().info(f"RAM used: {psutil.Process().memory_info().rss / (1024 * 1024):.2f} MB")
 
         # Iterate over batches in your DataLoader
@@ -36,10 +36,10 @@ def train(list_of_files):
             # inputs, labels = batch
 
     # Save the trained model
-    model.save_pretrained(training_args.B1_E99.output_dir)
+    model.save_pretrained(training_args.config.output_dir)
 
     # Save the tokenizer
-    classDataset.get_tokenizer().save_pretrained(training_args.B1_E99.output_dir)
+    classDataset.get_tokenizer().save_pretrained(training_args.config.output_dir)
 
 
 def limit_cpu_usage():

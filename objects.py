@@ -1,6 +1,6 @@
 from transformers import AutoTokenizer
 from torch.utils.data import Dataset
-import torch
+import training_args
 
 
 class FileData:
@@ -57,8 +57,7 @@ class ClassDataset(Dataset):
 
     def __init__(self, inputDataList):
         self.inputDataList = inputDataList
-        # self.tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
-        self.tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+        self.tokenizer = AutoTokenizer.from_pretrained(training_args.model_name_string)
 
     def __len__(self):
         return len(self.inputDataList)

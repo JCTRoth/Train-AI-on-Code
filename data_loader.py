@@ -54,10 +54,10 @@ def load_content(list_of_files):
 
     for file_data in list_of_files:
         # Read the content of the file
-        with open(file_data.absolute_path, 'r', encoding='utf-8') as file:
             try:
-                content = file.read()
-                file_data.content = content
+                with open(file_data.absolute_path, 'r', encoding='utf-8') as file:
+                    content = file.read()
+                    file_data.content = content
             except Exception as e:
                 get_logger().error(f"Error reading file {file_data.absolute_path}: {str(e)}")
 
@@ -115,5 +115,7 @@ if __name__ == "__main__":
     file_list : list[FileData] = load_dataset_as_list(input_dir=input_dir,removeToGetRelativePath=removeToGetRelativePath,
                                                       listOfFilePostFixes=language_filter_lists.csharp_postfixes)
 
+
+    print()
     # Convert files to CSV
     # convert_files_to_csv(input_dir, output_csv, removeToGetRelativePath)

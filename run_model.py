@@ -5,11 +5,8 @@ from logger import get_logger
 
 
 # Load the model and tokenizer
-# model = AutoModelForCausalLM.from_pretrained(training_args.B1_E99.output_dir, is_decoder=True)
-# tokenizer = AutoTokenizer.from_pretrained(training_args.B1_E99.output_dir,is_decoder=True)
-model = AutoModelForCausalLM.from_pretrained("bert-base-uncased",is_decoder=True)
-tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased",is_decoder=True)
-
+model = AutoModelForCausalLM.from_pretrained(training_args.model_name_string, is_decoder=True)
+tokenizer = AutoTokenizer.from_pretrained(training_args.model_name_string,is_decoder=True)
 
 # Set the model to evaluation mode
 model.eval()
