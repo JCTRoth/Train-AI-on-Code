@@ -131,14 +131,88 @@ class ContextCreator:
         
         # Ensure file is saved in the output directory
         filepath = os.path.join(self.output_dir, filename)
-            
-        lines, _ = self._explore_object(obj, "root", set())
-        with open(filepath, "w") as f:
-            for line in lines:
-                f.write(line + "\n")
         
-        self.logger.info(f"Saved text representation to {filepath}")
+        # Get raw tree data
+        lines, json_tree = self._explore_object(obj, "root", set())
+        
+        # Generate enhanced AI-friendly text representation
+        ai_context_lines = self._generate_ai_context(json_tree)
+        
+        # Write to file
+        with open(filepath, "w") as f:
+            f.write(ai_context_lines)
+        
+        self.logger.info(f"Saved enhanced text representation to {filepath}")
         return filepath
+        
+    def _generate_ai_context(self, json_tree: Dict[str, Any], depth: int = 0) -> str:
+        """
+        Generate AI-friendly context text from the JSON tree.
+        
+        Args:
+            json_tree: The JSON tree structure
+            depth: Current depth in the tree
+            
+        Returns:
+            Formatted text optimized for AI context
+        """
+        lines = []
+        indent = "  " * depth
+        
+        # Add header for the component
+        if depth == 0:
+            lines.append(f"# {json_tree['class']} Component Structure")
+            lines.append("")
+            lines.append("This document describes the structure and capabilities of a software component.")
+            lines.append("")
+        else:
+            lines.append(f"{indent}## {json_tree['name']}: {json_tree['class']}")
+            
+        # Add method documentation
+        if json_tree['methods']:
+            if depth == 0:
+                lines.append("## Available Methods")
+            else:
+                lines.append(f"{indent}### Methods")
+                
+            for method in json_tree['methods']:
+                # Extract method name and parameters from format: .method_name(param1: type, param2: type)
+                method_parts = method.split('(', 1)
+                method_name = method_parts[0].strip('.')
+                params = method_parts[1].strip(')') if len(method_parts) > 1 else ""
+                
+                if params:
+                    lines.append(f"{indent}- `{method_name}`: Takes parameters ({params})")
+                else:
+                    lines.append(f"{indent}- `{method_name}`: No parameters required")
+            
+            lines.append("")
+        
+        # Add dependencies section
+        if json_tree['children']:
+            if depth == 0:
+                lines.append("## Dependencies")
+                lines.append("")
+                lines.append("This component depends on the following components:")
+                lines.append("")
+            else:
+                lines.append(f"{indent}### Dependencies")
+                lines.append("")
+            
+            for child in json_tree['children']:
+                child_text = self._generate_ai_context(child, depth + 1)
+                lines.append(child_text)
+                
+        # For root level, add a summary
+        if depth == 0:
+            lines.append("## Summary")
+            lines.append("")
+            lines.append(f"The {json_tree['class']} component has {len(json_tree['methods'])} methods and "
+                        f"{len(json_tree['children'])} direct dependencies.")
+            lines.append("")
+            lines.append("This context was generated automatically by ContextCreator.")
+            
+        return "\n".join(lines)
 
     def save_method_tree_json(self, obj: Any, filename: str = None) -> str:
         """

@@ -1,0 +1,67 @@
+{
+  "name": "root",
+  "class": "UserService",
+  "methods": [
+    ".notify_user(user_id: int, message: str)",
+    ".register_user(user_data: dict)"
+  ],
+  "children": [
+    {
+      "name": "repository",
+      "class": "UserRepository",
+      "methods": [
+        ".get_user_by_id(user_id: int)",
+        ".save_user(user_data: dict)"
+      ],
+      "children": [
+        {
+          "name": "db",
+          "class": "DatabaseConnection",
+          "methods": [
+            ".connect()",
+            ".disconnect()",
+            ".execute_query(query: str)"
+          ],
+          "children": []
+        },
+        {
+          "name": "logger",
+          "class": "Logger",
+          "methods": [
+            ".log_error(message: str)",
+            ".log_info(message: str)"
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "notifier",
+      "class": "NotificationService",
+      "methods": [
+        ".send_email(address: str, content: str)",
+        ".send_sms(number: str, content: str)"
+      ],
+      "children": [
+        {
+          "name": "logger",
+          "class": "Logger",
+          "methods": [
+            ".log_error(message: str)",
+            ".log_info(message: str)"
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "logger",
+      "class": "Logger",
+      "methods": [
+        ".log_error(message: str)",
+        ".log_info(message: str)"
+      ],
+      "children": []
+    }
+  ]
+}

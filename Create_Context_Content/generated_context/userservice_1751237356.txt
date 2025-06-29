@@ -1,0 +1,52 @@
+# UserService Component Structure
+
+This document describes the structure and capabilities of a software component.
+
+## Available Methods
+- `notify_user`: Takes parameters (user_id: int, message: str)
+- `register_user`: Takes parameters (user_data: dict)
+
+## Dependencies
+
+This component depends on the following components:
+
+  ## repository: UserRepository
+  ### Methods
+  - `get_user_by_id`: Takes parameters (user_id: int)
+  - `save_user`: Takes parameters (user_data: dict)
+
+  ### Dependencies
+
+    ## db: DatabaseConnection
+    ### Methods
+    - `connect`: No parameters required
+    - `disconnect`: No parameters required
+    - `execute_query`: Takes parameters (query: str)
+
+    ## logger: Logger
+    ### Methods
+    - `log_error`: Takes parameters (message: str)
+    - `log_info`: Takes parameters (message: str)
+
+  ## notifier: NotificationService
+  ### Methods
+  - `send_email`: Takes parameters (address: str, content: str)
+  - `send_sms`: Takes parameters (number: str, content: str)
+
+  ### Dependencies
+
+    ## logger: Logger
+    ### Methods
+    - `log_error`: Takes parameters (message: str)
+    - `log_info`: Takes parameters (message: str)
+
+  ## logger: Logger
+  ### Methods
+  - `log_error`: Takes parameters (message: str)
+  - `log_info`: Takes parameters (message: str)
+
+## Summary
+
+The UserService component has 2 methods and 3 direct dependencies.
+
+This context was generated automatically by ContextCreator.
