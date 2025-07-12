@@ -1,0 +1,186 @@
+{
+  "name": "root",
+  "class": "UserService",
+  "methods": [
+    {
+      "name": "notify_user",
+      "signature": ".notify_user(user_id: int, message: str)",
+      "params": [
+        "user_id: int",
+        "message: str"
+      ],
+      "return_type": "Any",
+      "doc": "Send a notification to a specific user."
+    },
+    {
+      "name": "register_user",
+      "signature": ".register_user(user_data: dict)",
+      "params": [
+        "user_data: dict"
+      ],
+      "return_type": "Any",
+      "doc": "Register a new user in the system."
+    }
+  ],
+  "children": [
+    {
+      "name": "repository",
+      "class": "UserRepository",
+      "methods": [
+        {
+          "name": "get_user_by_id",
+          "signature": ".get_user_by_id(user_id: int)",
+          "params": [
+            "user_id: int"
+          ],
+          "return_type": "Any",
+          "doc": "Retrieve a user by their ID."
+        },
+        {
+          "name": "save_user",
+          "signature": ".save_user(user_data: dict)",
+          "params": [
+            "user_data: dict"
+          ],
+          "return_type": "Any",
+          "doc": "Create or update a user in the database."
+        }
+      ],
+      "children": [
+        {
+          "name": "db",
+          "class": "DatabaseConnection",
+          "methods": [
+            {
+              "name": "connect",
+              "signature": ".connect()",
+              "params": [],
+              "return_type": "Any",
+              "doc": "Establish connection to the database."
+            },
+            {
+              "name": "disconnect",
+              "signature": ".disconnect()",
+              "params": [],
+              "return_type": "Any",
+              "doc": "Close the database connection."
+            },
+            {
+              "name": "execute_query",
+              "signature": ".execute_query(query: str)",
+              "params": [
+                "query: str"
+              ],
+              "return_type": "list",
+              "doc": "Execute a SQL query and return results."
+            }
+          ],
+          "children": []
+        },
+        {
+          "name": "logger",
+          "class": "Logger",
+          "methods": [
+            {
+              "name": "log_error",
+              "signature": ".log_error(message: str)",
+              "params": [
+                "message: str"
+              ],
+              "return_type": "Any",
+              "doc": "Log an error message."
+            },
+            {
+              "name": "log_info",
+              "signature": ".log_info(message: str)",
+              "params": [
+                "message: str"
+              ],
+              "return_type": "Any",
+              "doc": "Log an informational message."
+            }
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "notifier",
+      "class": "NotificationService",
+      "methods": [
+        {
+          "name": "send_email",
+          "signature": ".send_email(address: str, content: str)",
+          "params": [
+            "address: str",
+            "content: str"
+          ],
+          "return_type": "Any",
+          "doc": "Send an email notification."
+        },
+        {
+          "name": "send_sms",
+          "signature": ".send_sms(number: str, content: str)",
+          "params": [
+            "number: str",
+            "content: str"
+          ],
+          "return_type": "Any",
+          "doc": "Send an SMS notification."
+        }
+      ],
+      "children": [
+        {
+          "name": "logger",
+          "class": "Logger",
+          "methods": [
+            {
+              "name": "log_error",
+              "signature": ".log_error(message: str)",
+              "params": [
+                "message: str"
+              ],
+              "return_type": "Any",
+              "doc": "Log an error message."
+            },
+            {
+              "name": "log_info",
+              "signature": ".log_info(message: str)",
+              "params": [
+                "message: str"
+              ],
+              "return_type": "Any",
+              "doc": "Log an informational message."
+            }
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "logger",
+      "class": "Logger",
+      "methods": [
+        {
+          "name": "log_error",
+          "signature": ".log_error(message: str)",
+          "params": [
+            "message: str"
+          ],
+          "return_type": "Any",
+          "doc": "Log an error message."
+        },
+        {
+          "name": "log_info",
+          "signature": ".log_info(message: str)",
+          "params": [
+            "message: str"
+          ],
+          "return_type": "Any",
+          "doc": "Log an informational message."
+        }
+      ],
+      "children": []
+    }
+  ]
+}

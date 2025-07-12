@@ -1,0 +1,66 @@
+# UserService Component Structure
+
+Component analysis of UserService object hierarchy and capabilities.
+
+## Available Methods
+- `notify_user(user_id: int, message: str) -> Any`
+  Send a notification to a specific user.
+- `register_user(user_data: dict) -> Any`
+  Register a new user in the system.
+
+## Dependencies
+
+  ## repository: UserRepository
+  ### Methods
+  - `get_user_by_id(user_id: int) -> Any`
+    Retrieve a user by their ID.
+  - `save_user(user_data: dict) -> Any`
+    Create or update a user in the database.
+
+  ### Dependencies
+
+    ## db: DatabaseConnection
+    ### Methods
+    - `connect() -> Any`
+      Establish connection to the database.
+    - `disconnect() -> Any`
+      Close the database connection.
+    - `execute_query(query: str) -> list`
+      Execute a SQL query and return results.
+
+    ## logger: Logger
+    ### Methods
+    - `log_error(message: str) -> Any`
+      Log an error message.
+    - `log_info(message: str) -> Any`
+      Log an informational message.
+
+  ## notifier: NotificationService
+  ### Methods
+  - `send_email(address: str, content: str) -> Any`
+    Send an email notification.
+  - `send_sms(number: str, content: str) -> Any`
+    Send an SMS notification.
+
+  ### Dependencies
+
+    ## logger: Logger
+    ### Methods
+    - `log_error(message: str) -> Any`
+      Log an error message.
+    - `log_info(message: str) -> Any`
+      Log an informational message.
+
+  ## logger: Logger
+  ### Methods
+  - `log_error(message: str) -> Any`
+    Log an error message.
+  - `log_info(message: str) -> Any`
+    Log an informational message.
+
+## Overview
+
+- **Type**: UserService
+- **Direct Methods**: 2
+- **Total Methods** (including dependencies): 15
+- **Direct Dependencies**: 3
