@@ -1,16 +1,8 @@
 # Layered Python Application Example
 
-This project demonstrates a layered application structure in Python, including Logger, DatabaseConnection, UserRepository, NotificationService, and UserService classes. It also includes a method tree explorer that outputs the structure in both text and JSON formats, optimized for AI context generation.
-
-## Features
-- Layered architecture with clear separation of concerns
-- Object graph exploration to output method trees
-- AI-friendly context generation in markdown format
-- Automatic file naming with class name and timestamp
-- Output saved to dedicated folder
-- Logging functionality
-- Cycle detection to prevent infinite recursion
-- Example main block for demonstration
+The Context Creator is a Python application designed
+to generate structured context files of class objects it iterates over. It is particularly useful for creating documentation and context for AI code assistants, such as Copilot, by extracting and formatting information about Python classes, methods, and their dependencies.
+That way it extracts information from Python classes, methods, and their dependencies, producing Context Files that are used to enrich the available context for AI code assistants. (Copilot)
 
 ## Generated Outputs
 
