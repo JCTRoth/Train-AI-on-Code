@@ -108,7 +108,7 @@ if __name__ == "__main__":
     input_dir = "/home/jonas/Git/ShoppingListApp/"
 
     # Output CSV file path
-    output_csv = "/home/jonas/Schreibtisch/file.csv"
+    output_csv = "./pressed_output.csv"
 
     removeToGetRelativePath = "/home/jonas/Git"
 

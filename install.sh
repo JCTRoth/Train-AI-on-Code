@@ -13,5 +13,7 @@ sudo apt-get install -y python3 python3-pip
 sudo pip3 install --upgrade pip
 
 # Install required Python libraries
-sudo pip3 install torch transformers torchvision pandas
+sudo pip3 install torch torchvision pandas
 sudo pip3 install transformers[torch]
+sudo pip3 install accelerate einops
+sudo pip3 install -i https://pypi.org/simple/ bitsandbytes  # Install specific version for 8-bit quantization

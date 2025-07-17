@@ -1,5 +1,11 @@
 # Train any AI Model on any Code base.
 
+## Run it
+
+python3 run_model.py
+
+python3 train_model.py
+
 ### Training Configuration Module:
    - Specifies configurations for the training process, such as batch size and number of epochs.
 

@@ -2,35 +2,71 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 import training_args
 from logger import get_logger
+import os
 
 
-# Load the model and tokenizer
-model = AutoModelForCausalLM.from_pretrained(training_args.model_name_string, is_decoder=True)
-tokenizer = AutoTokenizer.from_pretrained(training_args.model_name_string,is_decoder=True)
+# Load the model and tokenizer from the trained output
+model_path = "./training_output"
+if os.path.exists(model_path):
+    # Load model with basic configuration
+    model = AutoModelForCausalLM.from_pretrained(model_path)
+    
+    # Load tokenizer and set proper padding
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    
+    get_logger().info(f"Loaded model from {model_path}")
+else:
+    get_logger().info(f"Trained model not found, using default model")
+    model = AutoModelForCausalLM.from_pretrained(training_args.model_name_string)
+    tokenizer = AutoTokenizer.from_pretrained(training_args.model_name_string)
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
 
 # Set the model to evaluation mode
 model.eval()
 
 # Function to generate a response
-def generate_response(input_text, model, tokenizer, max_length=50, temperature=0.7, top_k=90, top_p=1.95):
+def generate_response(input_text, model, tokenizer, max_length=50, temperature=0.8, top_k=40, top_p=0.9):
     with torch.no_grad():
-        input_ids = torch.tensor([tokenizer.encode(input_text, add_special_tokens=True)])
+        # Create inputs with proper attention mask
+        inputs = tokenizer(input_text, return_tensors="pt", padding=True)
+        
+        # Generate response
         output_ids = model.generate(
-            input_ids,
+            inputs.input_ids,
+            attention_mask=inputs.attention_mask,
             do_sample=True,
-            max_length=max_length,
+            max_length=max_length + len(input_text),
             temperature=temperature,
             top_k=top_k,
             top_p=top_p,
+            pad_token_id=tokenizer.pad_token_id,
+            eos_token_id=tokenizer.eos_token_id,
+            repetition_penalty=1.2
         )
-    response_text = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+        
+    # Decode the response
+    response_text = tokenizer.decode(output_ids[0][inputs.input_ids.shape[1]:], skip_special_tokens=True)
     return response_text
 
 # Start a chat loop
-while True:
-    get_logger().info("Chat with the model. Type 'exit' to end the conversation.")
-    user_input = input("You: ")
-    if user_input.lower() == "exit":
-        break
-    bot_response = generate_response(user_input, model, tokenizer)
-    get_logger().info(f"Bot: {bot_response}")
+def start_conversation():
+    get_logger().info("Chat with the trained Phi model. Type 'exit' to end the conversation.")
+    
+    while True:
+        user_input = input("\nYou: ")
+        if user_input.lower() == "exit":
+            break
+        
+        # Simple prompt format
+        prompt = f"Question: {user_input}\nAnswer:"
+        
+        # Generate response
+        response = generate_response(prompt, model, tokenizer)
+        
+        print(f"\nAI: {response}")
+
+if __name__ == "__main__":
+    start_conversation()

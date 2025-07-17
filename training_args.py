@@ -1,23 +1,18 @@
 from transformers import TrainingArguments
-from transformers import DistilBertForMaskedLM, DistilBertConfig
+from transformers import AutoConfig
 
 # Define your training arguments
 
-# model_name_string="distilbert/distilbert-base-uncased"
-model_name_string='distilbert/distilbert-base-uncased-distilled-squad'
+# Phi model - using Microsoft's Phi-2 model
+model_name_string='microsoft/phi-2'
 
-# B1_E99 = TrainingArguments(
-#     per_device_train_batch_size=1,
-#    num_train_epochs=99,
-#    logging_dir='./log',
-#    output_dir='./training_output'
-#)
+# Training parameters
+per_device_train_batch_size = 1
+num_train_epochs = 99
+logging_dir = './log'
+output_dir = './training_output'
 
-B1_E99 = DistilBertConfig(
-    vocab_size=30000,
-    max_position_embeddings=514,
-    per_device_train_batch_size=1,
-    num_train_epochs=99,
-    logging_dir='./log',
-    output_dir='./training_output'
+# Configuration for Phi model training
+Phi_config = AutoConfig.from_pretrained(
+    model_name_string,
 )

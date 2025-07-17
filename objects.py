@@ -5,7 +5,11 @@ import training_args
 
 class FileData:
     def __init__(self):
-        return
+        # Initialize with empty values
+        self._file_name = ""
+        self._relative_path = ""
+        self._absolute_path = ""
+        self._content = ""
         
     def init_with_data(self, file_name, relative_path, absolute_path, content):
         self._file_name = file_name
@@ -57,14 +61,21 @@ class ClassDataset(Dataset):
 
     def __init__(self, inputDataList):
         self.inputDataList = inputDataList
-        self.tokenizer = AutoTokenizer.from_pretrained(training_args.model_name_string)
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            training_args.model_name_string,
+            trust_remote_code=True  # Required for Phi model
+        )
+        
+        # Set padding token to the eos token if pad token is not set
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
 
     def __len__(self):
         return len(self.inputDataList)
 
     def __getitem__(self, idx):
         # Tokenize and encode text data
-        encoding = self.tokenizer(str(self.inputDataList[idx]), return_tensors='pt', padding=True, truncation=True)
+        encoding = self.tokenizer(str(self.inputDataList[idx]), return_tensors='pt', padding=True, truncation=True, max_length=512)
 
         # Use Classname as Label
         # Tokenize the string and encode it

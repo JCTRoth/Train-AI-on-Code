@@ -1,4 +1,4 @@
-from transformers import AutoModelForCausalLM
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from torch.utils.data import DataLoader
 from objects import ClassDataset
 import logger
@@ -11,21 +11,35 @@ import training_args
 
 
 def train(list_of_files):
-    # Load the pre-trained model
-    # model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1")
-    model = AutoModelForCausalLM.from_pretrained(training_args.model_name_string)
+    # Load the pre-trained model without quantization
+    get_logger().info(f"Loading model: {training_args.model_name_string}")
+    model = AutoModelForCausalLM.from_pretrained(
+        training_args.model_name_string,
+        trust_remote_code=True,  # Required for Phi model
+        device_map="auto",       # Use accelerate for optimal device placement
+    )
+
+    # Create tokenizer directly instead of through ClassDataset
+    tokenizer = AutoTokenizer.from_pretrained(
+        training_args.model_name_string,
+        trust_remote_code=True,  # Required for Phi model
+    )
+    
+    # Set padding token to the eos token if pad token is not set
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
 
     classDataset = ClassDataset(inputDataList=list_of_files)
 
     # Create a DataLoader for the dataset
-    dataloader = DataLoader(classDataset, batch_size=training_args.config.per_device_train_batch_size, shuffle=True)
+    dataloader = DataLoader(classDataset, batch_size=training_args.per_device_train_batch_size, shuffle=True)
 
     # Set your model to training mode
     model.train()
 
     # Iterate over epochs
-    for epoch in range(training_args.config.num_train_epochs):
-        get_logger().info(f"Epoch {epoch + 1}/{training_args.config.num_train_epochs}")
+    for epoch in range(training_args.num_train_epochs):
+        get_logger().info(f"Epoch {epoch + 1}/{training_args.num_train_epochs}")
         get_logger().info(f"RAM used: {psutil.Process().memory_info().rss / (1024 * 1024):.2f} MB")
 
         # Iterate over batches in your DataLoader
@@ -36,10 +50,12 @@ def train(list_of_files):
             # inputs, labels = batch
 
     # Save the trained model
-    model.save_pretrained(training_args.config.output_dir)
+    model.save_pretrained(training_args.output_dir)
 
     # Save the tokenizer
-    classDataset.get_tokenizer().save_pretrained(training_args.config.output_dir)
+    tokenizer.save_pretrained(training_args.output_dir)
+    
+    get_logger().info(f"Model and tokenizer saved to {training_args.output_dir}")
 
 
 def limit_cpu_usage():
