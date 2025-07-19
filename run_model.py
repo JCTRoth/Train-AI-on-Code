@@ -129,21 +129,41 @@ def start_conversation(model, tokenizer, generation_params=None):
     print("\n=== Phi Model Chat ===")
     print("Type 'exit' to end the conversation.")
     print("Type 'params' to view/change generation parameters.")
+    print("Type 'code-mode' to optimize settings for code generation.")
+    print("Type 'fast-code' for faster code generation with shorter outputs.")
     
     # Default generation parameters
     params = {
-        'max_length': 50,
-        'temperature': 0.8,
+        'max_length': 512,      # Outputs
+        'temperature': 0.5,     # Balanced creativity
+        'top_k': 100,           # Diverse sampling
+        'top_p': 0.95           # Broader nucleus sampling
+    }
+    
+    # Code optimized parameters
+    code_params = {
+        'max_length': 512,
+        'temperature': 0.3,
         'top_k': 40,
-        'top_p': 0.9
+        'top_p': 0.2
+    }
+    
+    # Fast code mode parameters (even faster response time)
+    fast_code_params = {
+        'max_length': 256,      # Shorter outputs for faster generation
+        'temperature': 0.4,     # More balanced temperature
+        'top_k': 30,            # More focused sampling
+        'top_p': 0.85           # More focused sampling for speed
     }
     
     # Update with any provided parameters
     if generation_params:
         params.update(generation_params)
     
+    # System instruction to encourage code output
+    system_instruction = "You are a coding assistant that always provides complete, working code examples with explanations. When asked programming questions, respond with full implementation code in the appropriate programming language. For Java questions, include necessary imports and complete class definitions. Ensure your code is properly formatted within triple backticks."
     # Keep track of conversation history
-    conversation_history = []
+    conversation_history = [f"System: {system_instruction}"]
     
     while True:
         user_input = input("\n\033[1mYou:\033[0m ")
@@ -175,6 +195,24 @@ def start_conversation(model, tokenizer, generation_params=None):
                             print(f"  {param} updated to {params[param]}")
                         except ValueError:
                             print(f"  Invalid value for {param}, keeping {params[param]}")
+            continue
+        
+        if user_input.lower() == "code-mode":
+            # Switch to code-optimized parameters
+            params.update(code_params)
+            print("\n\033[1mSwitched to code generation mode\033[0m")
+            print("Parameters updated for optimal code generation:")
+            for param, value in params.items():
+                print(f"  {param}: {value}")
+            continue
+            
+        if user_input.lower() == "fast-code":
+            # Switch to faster code-optimized parameters
+            params.update(fast_code_params)
+            print("\n\033[1mSwitched to fast code generation mode\033[0m")
+            print("Parameters updated for faster code generation:")
+            for param, value in params.items():
+                print(f"  {param}: {value}")
             continue
         
         # Add to conversation history
@@ -242,6 +280,14 @@ def parse_args():
                        action='store_true',
                        help='Show all available model configurations')
     
+    parser.add_argument('--code-mode', '-c',
+                       action='store_true',
+                       help='Start in code generation mode with optimized parameters')
+                       
+    parser.add_argument('--fast-code',
+                       action='store_true',
+                       help='Start in fast code generation mode with shorter outputs')
+    
     return parser.parse_args()
 
 if __name__ == "__main__":
@@ -289,6 +335,28 @@ if __name__ == "__main__":
             'top_k': args.top_k,
             'top_p': args.top_p
         }
+        
+        # Apply code mode if requested
+        if args.code_mode:
+            get_logger().info("Starting in code generation mode")
+            # Apply code-optimized parameters
+            generation_params.update({
+                'max_length': 512,      # Reasonable length for code
+                'temperature': 0.3,     # Deterministic but not too slow
+                'top_k': 40,            # Balanced focused sampling
+                'top_p': 0.9            # Slightly more focused for speed
+            })
+            
+        # Apply fast code mode if requested
+        if args.fast_code:
+            get_logger().info("Starting in fast code generation mode")
+            # Apply faster code-optimized parameters
+            generation_params.update({
+                'max_length': 256,      # Shorter outputs for faster generation
+                'temperature': 0.4,     # More balanced temperature
+                'top_k': 30,            # More focused sampling
+                'top_p': 0.85           # More focused sampling for speed
+            })
         
         # Start the conversation
         start_conversation(model, tokenizer, generation_params)
