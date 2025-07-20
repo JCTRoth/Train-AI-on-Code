@@ -34,9 +34,25 @@ model_name_string = model_configs[default_model]['name']
 
 # Training parameters
 per_device_train_batch_size = 1
-num_train_epochs = 99
+num_train_epochs = 10  # Adjust this based on your dataset size and convergence and hardware capabilities
 logging_dir = './log'
 output_dir = './training_output'
+
+# Additional training parameters
+learning_rate = 5e-5
+weight_decay = 0.01
+max_grad_norm = 1.0
+max_seq_length = 512  # Maximum sequence length for tokenization
+logging_steps = 10
+save_steps = 50
+warmup_ratio = 0.1  # Percentage of steps for warmup
+fp16 = False  # Whether to use mixed precision training
+
+# Advanced training options
+gradient_accumulation_steps = 4  # Simulate larger batch sizes with limited GPU memory
+evaluation_steps = 100  # How often to evaluate the model
+early_stopping_patience = 3  # Stop training if no improvement for this many evaluations
+early_stopping_threshold = 0.01  # Minimum change to qualify as improvement
 
 # Configuration for Phi model training
 Phi_config = AutoConfig.from_pretrained(
